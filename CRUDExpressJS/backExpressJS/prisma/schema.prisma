@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de usuário
+model User {
+  id    Int    @id @default(autoincrement())
+  name  String @db.VarChar(100) // Limitar o tamanho do nome
+  email String @unique // Garantir que o e-mail seja único
+  documents Document[] // Relacionamento com documentos
+}
+
+// Enum para status do documento
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Modelo de documento
+model Document {
+  id     Int            @id @default(autoincrement())
+  name   String         @db.VarChar(100) // Limitar o tamanho do nome
+  status DocumentStatus // Usar enum para status
+  userId Int
+  user   User           @relation(fields: [userId], references: [id])
+}
